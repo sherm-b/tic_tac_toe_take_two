@@ -43,6 +43,10 @@ class Board
     @board_positions.values_at(0, 4, 8).uniq.size == 1 ||
       @board_positions.values_at(2, 4, 6).uniq.size == 1
   end
+
+  def cats_game?
+    @board_positions.all? {|position| position.is_a? String}
+  end
 end
 
 # Stores player info such as score, name, and symbol.
