@@ -1,3 +1,5 @@
+# frozen_string_literal: false
+
 # Handles drawing the board and board manipulations, as well as checks for win
 # state and cat's game.
 class Board
@@ -17,5 +19,18 @@ class Board
 
   def playable?(space)
     space != 'X' || space != 'O'
+  end
+end
+
+# Stores player info such as score, name, and symbol.
+class Player
+  @@player_count = 0
+
+  def initialize(name)
+    @@player_count += 1
+    @player_number = @@player_count
+    @name = name
+    @symbol = player_number == 1 ? 'X' : 'O'
+    @score = 0
   end
 end
