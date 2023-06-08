@@ -20,6 +20,29 @@ class Board
   def playable?(space)
     space != 'X' || space != 'O'
   end
+
+  def winner?
+    horizontal_winner?
+    vertical_winner?
+    diagonal_winner?
+  end
+
+  def horizontal_winner?
+    @board_positions[0..2].uniq.size == 1 ||
+      @board_positions[3..5].uniq.size == 1 ||
+      @board_positions[6..7].uniq.size == 1
+  end
+
+  def vertical_winner?
+    @board_positions.values_at(0, 3, 6).uniq.size == 1 ||
+      @board_positions.values_at(1, 4, 7).uniq.size == 1 ||
+      @board_positions.values_at(2, 5, 8).uniq.size == 1
+  end
+
+  def diagonal_winner?
+    @board_positions.values_at(0, 4, 8).uniq.size == 1 ||
+      @board_positions.values_at(2, 4, 6).uniq.size == 1
+  end
 end
 
 # Stores player info such as score, name, and symbol.
