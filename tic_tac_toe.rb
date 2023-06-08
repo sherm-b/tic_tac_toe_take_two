@@ -3,6 +3,8 @@
 # Handles drawing the board and board manipulations, as well as checks for win
 # state and cat's game.
 class Board
+  attr_accessor :board_positions
+
   def initialize
     @board_positions = Array.new(9) { |n| n + 1 }
   end
@@ -18,7 +20,9 @@ class Board
   end
 
   def playable?(space)
-    space != 'X' || space != 'O'
+    current_move.is_a? Integer
+    @board_positions.include? current_move
+    @board_positions[space] != 'X' || @board_positions != 'O'
   end
 
   def winner?
@@ -45,19 +49,46 @@ class Board
   end
 
   def cats_game?
-    @board_positions.all? {|position| position.is_a? String}
+    @board_positions.all? { |position| position.is_a? String }
   end
 end
 
 # Stores player info such as score, name, and symbol.
 class Player
+  attr_accessor :name, :symbol, :score
+
   @@player_count = 0
 
   def initialize(name)
     @@player_count += 1
     @player_number = @@player_count
     @name = name
-    @symbol = player_number == 1 ? 'X' : 'O'
+    @symbol = @player_number == 1 ? 'X' : 'O'
     @score = 0
+  end
+end
+
+# Stores game loop functions, initializes with first prompts for players.
+class Game
+  def initialize
+    puts "Let's play tic-tac-toe! Player 1, please enter your name!"
+    p1_name = gets.chomp
+    @p1 = Player.new(p1_name)
+    puts 'Player 2, please enter your name!'
+    p2_name = gets.chomp
+    @p2 = Player.new(p2_name)
+    @board = Board.new
+  end
+
+  def turn(player)
+    @board.draw_board
+    puts "#{player.name}'s turn. Make your move (input a number 1-9 and press enter)"
+    move = gets.chomp.to_i
+    until @board.playable?(move)
+      @board.draw_board
+      puts 'Invalid move, please try again.'
+      move = gets.chomp.to_i
+    end
+    @board.board_positions[move - 1] = player.symbol
   end
 end
