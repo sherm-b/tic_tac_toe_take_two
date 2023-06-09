@@ -20,15 +20,15 @@ class Board
   end
 
   def playable?(space)
-    current_move.is_a? Integer
-    @board_positions.include? current_move
-    @board_positions[space] != 'X' || @board_positions != 'O'
+    @board_positions.include?(space) &&
+      @board_positions[space - 1] != 'X' &&
+      @board_positions[space - 1] != 'O'
   end
 
   def winner?
-    horizontal_winner?
-    vertical_winner?
-    diagonal_winner?
+    horizontal_winner? ||
+      vertical_winner? ||
+      diagonal_winner?
   end
 
   def horizontal_winner?
@@ -68,16 +68,51 @@ class Player
   end
 end
 
-# Stores game loop functions, initializes with first prompts for players.
+# Stores game logic
 class Game
-  def initialize
-    puts "Let's play tic-tac-toe! Player 1, please enter your name!"
-    p1_name = gets.chomp
-    @p1 = Player.new(p1_name)
-    puts 'Player 2, please enter your name!'
-    p2_name = gets.chomp
-    @p2 = Player.new(p2_name)
+  def initialize(player1, player2)
+    @p1 = player1
+    @p2 = player2
+  end
+
+  def game_loop
     @board = Board.new
+    until @board.winner? || @board.cats_game?
+      turn(@p1)
+      winner = 1
+      turn(@p2) unless @board.winner? || @board.cats_game?
+    end
+    @board.draw_board
+    end_state(winner)
+  end
+
+  def end_state(win_number)
+    if @board.cats_game?
+      cats_game_message
+    elsif win_number == 1
+      win_message(@p1)
+    else
+      win_message(@p2)
+    end
+  end
+
+  def cats_game_message
+    puts <<~SCOREBOARD
+      Cat's game! Nobody wins!
+      The score is still #{@p1.name} - #{@p1.score} | #{@p2.name} - #{@p2.score}
+      Want to play again? [y/n]
+    SCOREBOARD
+    gets.chomp.downcase == 'y' ? game_loop : return
+  end
+
+  def win_message(winner)
+    winner.score += 1
+    puts <<~SCOREBOARD
+      #{winner.name} wins!
+      The score is now #{@p1.name} - #{@p1.score} | #{@p2.name} - #{@p2.score}
+      Want to play again? [y/n]
+    SCOREBOARD
+    gets.chomp.downcase == 'y' ? game_loop : return
   end
 
   def turn(player)
@@ -92,3 +127,14 @@ class Game
     @board.board_positions[move - 1] = player.symbol
   end
 end
+
+def new_game
+  puts "Let's play tic-tac-toe! Player 1, please enter your name!"
+  p1 = Player.new(gets.chomp)
+  puts 'Player 2, please enter your name!'
+  p2 = Player.new(gets.chomp)
+  tictac = Game.new(p1, p2)
+  tictac.game_loop
+end
+
+new_game
