@@ -1,6 +1,6 @@
 # frozen_string_literal: false
 
-# Handles drawing the board and board manipulations, as well as checks for win
+# Handles drawing the board, as well as checks for win
 # state and cat's game.
 class Board
   attr_accessor :board_positions
